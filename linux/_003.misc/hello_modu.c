@@ -44,7 +44,6 @@ static struct miscdevice misc =
 
 static int __init hello_init(void)
 {
-        /* 注册杂项字符设备 */
         misc_register(&misc);
         printk("hello_init ok\n");
         return 0;
@@ -52,7 +51,6 @@ static int __init hello_init(void)
 
 static void __exit hello_exit(void)
 {
-        /* 注销 */
         misc_deregister(&misc);
         printk("hello_exit ok\n");
 }
