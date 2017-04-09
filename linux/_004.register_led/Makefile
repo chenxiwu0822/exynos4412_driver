@@ -7,8 +7,8 @@ all:
 	@make -C $(KERNEL) M=`pwd` modules > modules.log
 	@arm-linux-gcc led_app.c -o app > app.log
 	@rm -rf $(ROOTFS)/test/*
-	@cp *.ko $(ROOTFS)/test
-	@cp app $(ROOTFS)/test
+	@cp -f *.ko $(ROOTFS)/test
+	@cp -f app $(ROOTFS)/test
 	@echo "\033[31m >>>>>> make all successful <<<<<< \033[0m"
 	@make clean
 clean:
