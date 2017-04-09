@@ -91,6 +91,10 @@ error:
 static void __exit mod_exit(void)
 {
         unregister_chrdev(tiny4412_major, "tiny4412_module");
+        cdev_del(standard_device);
+        unregister_chrdev_region(tiny4412_devno, 1);
+        device_destroy(tiny4412_class, tiny4412_devno);
+        class_destroy(tiny4412_class);
         printk("mod_exit ok\n");
 }
 
