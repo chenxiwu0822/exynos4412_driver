@@ -38,24 +38,24 @@ static struct file_operations tiny4412_fops =
 static struct miscdevice misc =
 {
         .minor   = 255,
-        .name    = "tiny4412_hello",
+        .name    = "misc_device",
         .fops    = &tiny4412_fops,
 };
 
-static int __init hello_init(void)
+static int __init mod_init(void)
 {
         misc_register(&misc);
-        printk("hello_init ok\n");
+        printk("mod_init ok\n");
         return 0;
 }
 
-static void __exit hello_exit(void)
+static void __exit mod_exit(void)
 {
         misc_deregister(&misc);
-        printk("hello_exit ok\n");
+        printk("mod_exit ok\n");
 }
 
-module_init(hello_init);
-module_exit(hello_exit);
+module_init(mod_init);
+module_exit(mod_exit);
 
 MODULE_LICENSE("GPL");

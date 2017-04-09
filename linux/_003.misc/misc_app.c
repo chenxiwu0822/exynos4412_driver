@@ -3,7 +3,7 @@
 int main(int argc, char**argv)
 {
         int fd;
-        fd = open("/dev/tiny4412_hello", 2);
+        fd = open("/dev/misc_device", 2);
         if(fd<0)
         {
                 printf("driver open fail\n");
