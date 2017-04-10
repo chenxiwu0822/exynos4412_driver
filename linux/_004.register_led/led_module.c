@@ -7,20 +7,20 @@
 
 #include "led_driver.h"
 
-static volatile unsigned int *GPD0CON = NULL;
-static volatile unsigned int *GPD0DAT = NULL;
+static volatile unsigned int *GPM4CON = NULL;
+static volatile unsigned int *GPM4DAT = NULL;
 
 static int tiny4412_open(struct inode *my_indoe, struct file *my_file)
 {
-        *GPD0CON &= ~(0xf << 0 * 4);
-        *GPD0CON |= (1 << 0 * 4);
+        *GPM4CON &= ~(0xf << 0 * 4);
+        *GPM4CON |= (1 << 0 * 4);
         printk(KERN_INFO "open set the gpio to output mode\n");
         return 0;
 }
 
 static int tiny4412_release(struct inode *my_indoe, struct file *my_file)
 {
-        *GPD0DAT |= (1 << 0);
+        *GPM4DAT |= (1 << 0);
         printk(KERN_INFO "close the led\n");
         return 0;
 }
@@ -42,17 +42,17 @@ static int tiny4412_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
         switch(cmd) 
         {
         case LED_ON:
-                *GPD0DAT &= ~(1 << 0);
+                *GPM4DAT &= ~(1 << 0);
                 printk(KERN_INFO "close the led\n");
                 break;
                 
         case LED_OFF:
-                *GPD0DAT |= (1 << 0);
+                *GPM4DAT |= (1 << 0);
                 printk(KERN_INFO "open the led\n");
                 break;
                 
         default:
-                *GPD0DAT |= (1 << 0);
+                *GPM4DAT |= (1 << 0);
                 break;
         }
 
@@ -78,8 +78,8 @@ static struct miscdevice misc =
 static int __init mod_init(void)
 {
         misc_register(&misc);
-        GPD0CON = ioremap(0x110002E0, 4);
-        GPD0DAT = ioremap(0x110002E4, 4);
+        GPM4CON = ioremap(0x110002E0, 4);
+        GPM4DAT = ioremap(0x110002E4, 4);
         
         printk(KERN_INFO "mod_init ok\n");
         return 0;
@@ -87,11 +87,10 @@ static int __init mod_init(void)
 
 static void __exit mod_exit(void)
 {
-        printk(KERN_INFO "mod_exit ok\n");
         misc_deregister(&misc);
         
-        iounmap(GPD0CON);
-        iounmap(GPD0DAT);
+        iounmap(GPM4CON);
+        iounmap(GPM4DAT);
         
         printk(KERN_INFO "mod_exit ok\n");
 }
