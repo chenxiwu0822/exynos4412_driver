@@ -21,7 +21,7 @@ static int tiny4412_open(struct inode *my_indoe, struct file *my_file)
 static int tiny4412_release(struct inode *my_indoe, struct file *my_file)
 {
         *GPM4DAT |= (1 << 0);
-        printk(KERN_INFO "close the led\n");
+        printk(KERN_INFO "release close the led\n");
         return 0;
 }
 
@@ -43,12 +43,12 @@ static int tiny4412_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
         {
         case LED_ON:
                 *GPM4DAT &= ~(1 << 0);
-                printk(KERN_INFO "close the led\n");
+                printk(KERN_INFO "ioctl open the led\n");
                 break;
                 
         case LED_OFF:
                 *GPM4DAT |= (1 << 0);
-                printk(KERN_INFO "open the led\n");
+                printk(KERN_INFO "ioctl close the led\n");
                 break;
                 
         default:
@@ -78,6 +78,7 @@ static struct miscdevice misc =
 static int __init mod_init(void)
 {
         misc_register(&misc);
+        
         GPM4CON = ioremap(0x110002E0, 4);
         GPM4DAT = ioremap(0x110002E4, 4);
         
