@@ -38,7 +38,7 @@ static ssize_t tiny4412_write(struct file *my_file, const char __user *buff, siz
 
 static int tiny4412_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-        switch(cmd) 
+        switch(cmd)
         {
         case LED_ON:
                 gpio_set_value(EXYNOS4X12_GPM4(0), 0);

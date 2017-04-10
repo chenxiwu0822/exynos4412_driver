@@ -19,7 +19,7 @@ static int tiny4412_open(struct inode *my_indoe, struct file *my_file)
 
 static int tiny4412_release(struct inode *my_indoe, struct file *my_file)
 {
-        printk(KERN_INFO "close do nothing\n");
+        printk(KERN_INFO "release do nothing\n");
         return 0;
 }
 

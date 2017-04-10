@@ -1,6 +1,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/miscdevice.h>
+#include <linux/uaccess.h>
 #include <linux/fs.h>
 
 #include <asm/io.h>
@@ -8,8 +9,6 @@
 #include <linux/gpio.h>
 #include <mach/gpio.h>
 #include <plat/gpio-cfg.h>
-
-#include "beep_driver.h"
 
 static int tiny4412_open(struct inode *my_indoe, struct file *my_file)
 {
@@ -19,14 +18,30 @@ static int tiny4412_open(struct inode *my_indoe, struct file *my_file)
 
 static int tiny4412_release(struct inode *my_indoe, struct file *my_file)
 {
-        gpio_set_value(EXYNOS4_GPD0(0), 0);
-        printk(KERN_INFO "release close the beep\n");
+        printk(KERN_INFO "release do nothing\n");
         return 0;
 }
 
 static ssize_t tiny4412_read(struct file *my_file, char __user *buff, size_t cnt, loff_t *loff)
 {
-        printk(KERN_INFO "read do nothing\n");
+        int key = 0;
+        if(!gpio_get_value(EXYNOS4_GPX3(2))) 
+        {  
+                key = 0x01;
+        }
+        else if(!gpio_get_value(EXYNOS4_GPX3(3))) 
+        {
+                key = 0x02;   
+        }
+        else if(!gpio_get_value(EXYNOS4_GPX3(4))) 
+        {
+                key = 0x03;   
+        }
+        else if(!gpio_get_value(EXYNOS4_GPX3(5))) 
+        {
+                key = 0x04;   
+        }
+        copy_to_user(buff, &key, 4);
         return 0;
 }
 
@@ -38,22 +53,7 @@ static ssize_t tiny4412_write(struct file *my_file, const char __user *buff, siz
 
 static int tiny4412_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-        switch(cmd) 
-        {
-        case BEEP_ON:
-                gpio_set_value(EXYNOS4_GPD0(0), 1);
-                printk(KERN_INFO "ioctl open the beep\n");
-                break;
-                
-        case BEEP_OFF:
-                gpio_set_value(EXYNOS4_GPD0(0), 0);
-                printk(KERN_INFO "ioctl close the beep\n");
-                break;
-                
-        default:
-                gpio_set_value(EXYNOS4_GPD0(0), 0);
-                break;
-        }
+        printk(KERN_INFO "ioctl do nothing\n");
         return 0;
 }
 
@@ -69,22 +69,26 @@ static struct file_operations tiny4412_fops =
 static struct miscdevice misc =
 {
         .minor = 255,
-        .name  = "beep_device",
+        .name  = "key_device",
         .fops  = &tiny4412_fops,
 };
 
 static int __init mod_init(void)
 {
-        int ret;
-        gpio_free(EXYNOS4_GPD0(0));
-        ret = gpio_request(EXYNOS4_GPD0(0), "beep");
-        if (ret) 
-        {
-                printk(KERN_INFO "gpio_request fail");
-                return ret;
-        }
-        s3c_gpio_cfgpin(EXYNOS4_GPD0(0), S3C_GPIO_OUTPUT);
-        gpio_set_value(EXYNOS4_GPD0(0), 0);
+        gpio_free(EXYNOS4_GPX3(2));
+        gpio_free(EXYNOS4_GPX3(3));
+        gpio_free(EXYNOS4_GPX3(4));
+        gpio_free(EXYNOS4_GPX3(5));
+        
+        gpio_request(EXYNOS4_GPX3(2), "key1");
+        gpio_request(EXYNOS4_GPX3(3), "key2");
+        gpio_request(EXYNOS4_GPX3(4), "key3");
+        gpio_request(EXYNOS4_GPX3(5), "key4");
+        
+        s3c_gpio_cfgpin(EXYNOS4_GPX3(2), S3C_GPIO_INPUT);
+        s3c_gpio_cfgpin(EXYNOS4_GPX3(3), S3C_GPIO_INPUT);
+        s3c_gpio_cfgpin(EXYNOS4_GPX3(4), S3C_GPIO_INPUT);
+        s3c_gpio_cfgpin(EXYNOS4_GPX3(5), S3C_GPIO_INPUT);
         
         misc_register(&misc);
         printk(KERN_INFO "mod_init ok\n");
@@ -93,8 +97,13 @@ static int __init mod_init(void)
 
 static void __exit mod_exit(void)
 {
-        gpio_free(EXYNOS4_GPD0(0));
         misc_deregister(&misc);
+        
+        gpio_free(EXYNOS4_GPX3(2));
+        gpio_free(EXYNOS4_GPX3(3));
+        gpio_free(EXYNOS4_GPX3(4));
+        gpio_free(EXYNOS4_GPX3(5));
+        
         printk(KERN_INFO "mod_exit ok\n");
 }
 
