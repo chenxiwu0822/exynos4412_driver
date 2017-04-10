@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <sys/ioctl.h>
 
-
 #include "led_driver.h"
 
 int main(int argc, char**argv)
