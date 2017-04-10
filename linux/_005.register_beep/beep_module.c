@@ -14,14 +14,14 @@ static int tiny4412_open(struct inode *my_indoe, struct file *my_file)
 {
         *GPD0CON &= ~(0xf << 0 * 4);
         *GPD0CON |= (1 << 0 * 4);
-        printk(KERN_INFO "set the gpio to output mode\n");
+        printk(KERN_INFO "open set the gpio to output mode\n");
         return 0;
 }
 
 static int tiny4412_release(struct inode *my_indoe, struct file *my_file)
 {
         *GPD0DAT &= ~(1 << 0);
-        printk(KERN_INFO "close the beep\n");
+        printk(KERN_INFO "release close the beep\n");
         return 0;
 }
 
@@ -43,12 +43,12 @@ static int tiny4412_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
         {
         case BEEP_ON:
                 *GPD0DAT |= (1 << 0);
-                printk(KERN_INFO "open the beep\n");
+                printk(KERN_INFO "ioctl open the beep\n");
                 break;
                 
         case BEEP_OFF:
                 *GPD0DAT &= ~(1 << 0);
-                printk(KERN_INFO "close the beep\n");
+                printk(KERN_INFO "ioctl close the beep\n");
                 break;
                 
         default:
@@ -78,6 +78,7 @@ static struct miscdevice misc =
 static int __init mod_init(void)
 {
         misc_register(&misc);
+
         GPD0CON = ioremap(0x114000A0, 4);
         GPD0DAT = ioremap(0x114000A4, 4);
         
