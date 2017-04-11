@@ -41,7 +41,7 @@ static int tiny4412_minor;
 static dev_t tiny4412_devno;
 
 struct cdev * standard_device;
-static struct class  * tiny4412_class;
+static struct class * tiny4412_class;
 
 static int __init mod_init(void)
 {
